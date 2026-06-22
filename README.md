@@ -22,6 +22,9 @@ After training for **100 epochs** on the remote Kaggle Tesla T4 GPU, the model a
 | **mAP@50** | 99.48% |
 | **mAP@50-95** | 75.83% |
 
+### Training Progress & Curves
+![YOLO26s Training Curves](assets/results.png)
+
 ---
 
 ## 4K Validation Image Test
@@ -35,6 +38,9 @@ Testing on `15.jpg` (containing Germany, Russia, and France flags) achieved **10
 *   **Russia Flag:** Detected with **76% confidence** (deviation: 2.5px).
 
 Annotated predictions are saved in the `validate_ai_results_3840/` directory.
+
+### Annotated 4K Result Sample (15.jpg)
+![Trained YOLO26s detections on 15.jpg](assets/highres_15_detected.jpg)
 
 ---
 
