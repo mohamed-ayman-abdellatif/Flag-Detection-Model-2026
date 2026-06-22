@@ -1,0 +1,35 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IPYNB checkpoints
+.ipynb_checkpoints/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Large Datasets & Archives
+*.zip
+data set-20260622T155136Z-3-001/
+dataset/
+test_flight/
+meta_data/
+kaggle_dataset_temp/
+kaggle_kernel_temp/
+kaggle_parts_temp/
+flag_clf_dataset/
+egypt_flag_variants/
+synthetic_dataset/
+validate_ai_candidates/
+runs/kaggle_results/yolo26_small_results.zip
+
+# Large pretrained weights
+yolov8n.pt
+yolo26n.pt
+yolo26s.pt
+
+# CSV files
+*.csv
