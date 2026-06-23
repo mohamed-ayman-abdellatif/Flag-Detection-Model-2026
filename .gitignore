@@ -33,3 +33,8 @@ yolo26s.pt
 
 # CSV files
 *.csv
+!validation_sweep_results.csv
+
+# Video files
+*.mp4
+*.MP4
