@@ -24,37 +24,17 @@ flag_clf_dataset/
 egypt_flag_variants/
 synthetic_dataset/
 validate_ai_candidates/
-validate_multi_flag/
-temp_validation_images/
-
-# Image-heavy validation/reference datasets (too large for git)
-validate_ai/
-validate_egypt/
-validate_ai_results/
-validate_ai_results_2stage/
-validate_ai_results_3840/
-validate_ai_results_tiled/
-kaggle_dataset_resized/
-true_flags/
-scratch_test_flags/
-
-# Training run outputs (model weights, logs, etc.)
-runs/
-sample_verification/
+runs/kaggle_results/yolo26_small_results.zip
 
 # Large pretrained weights
 yolov8n.pt
 yolo26n.pt
 yolo26s.pt
-yolo26s_flag_best.pt
 
-# CSV files (raw telemetry data)
+# CSV files
 *.csv
 !validation_sweep_results.csv
 
 # Video files
 *.mp4
 *.MP4
-
-# Large image files in root (debug crops)
-debug_crop_*.png
