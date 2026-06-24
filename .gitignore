@@ -27,6 +27,7 @@ validate_ai_candidates/
 validate_multi_flag/
 temp_validation_images/
 new_negatives/
+full_frame_negatives/
 
 # Image-heavy validation/reference datasets (too large for git)
 validate_ai/
@@ -46,6 +47,7 @@ sample_verification/
 
 # Large pretrained weights
 *.pt
+!yolo26s_flag_best.pt
 
 # CSV files
 *.csv
