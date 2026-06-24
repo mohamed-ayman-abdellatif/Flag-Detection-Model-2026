@@ -129,3 +129,6 @@ def main():
         print(f"Total processed frames: {frame_idx - skipped_count}")
         print(f"Total skipped frames:   {skipped_count}")
         print(f"Annotated video saved successfully to: {output_path}")
+
+if __name__ == '__main__':
+    main()
