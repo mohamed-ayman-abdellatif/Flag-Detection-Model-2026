@@ -33,38 +33,56 @@ print(f"Templates loaded: {len(template_paths)}")
 def extract_backgrounds():
     frames_dir = r"c:\Users\mido\Downloads\frames-20260515T124041Z-3-001\frames"
     sz = 640
-    if not os.path.exists(frames_dir):
-        bgs = []
+    bgs = []
+    
+    # 1. Load original frames from downloads folder if they exist
+    if os.path.exists(frames_dir):
+        files = sorted([f for f in os.listdir(frames_dir) if f.endswith('.jpg')])
+        # Sample from 150 frames evenly distributed across the entire flight video
+        idx_list = np.linspace(0, len(files)-1, min(150, len(files)), dtype=int)
+        for idx in idx_list:
+            p = os.path.join(frames_dir, files[idx])
+            try:
+                with Image.open(p) as img:
+                    w, h = img.size
+                    for (x0, y0) in [
+                        (100, 100),
+                        (w-100-sz, 100),
+                        (100, h-100-sz),
+                        (w-100-sz, h-100-sz),
+                        (w//2-sz//2, h//2-sz//2),
+                    ]:
+                        x0 = max(0, min(x0, w-sz))
+                        y0 = max(0, min(y0, h-sz))
+                        bgs.append(img.crop((x0, y0, x0+sz, y0+sz)).copy())
+            except Exception:
+                pass
+        print(f"Extracted {len(bgs)} background patches of size {sz}x{sz} from original frames.")
+    else:
+        # Fallback if frames directory doesn't exist
         for _ in range(50):
             bg = Image.new('RGB', (sz, sz), (218, 187, 156))
             arr = np.array(bg)
             noise = np.random.randint(-15, 15, arr.shape, dtype=np.int16)
             arr = np.clip(arr.astype(np.int16) + noise, 0, 255).astype(np.uint8)
             bgs.append(Image.fromarray(arr))
-        return bgs
-
-    files = sorted([f for f in os.listdir(frames_dir) if f.endswith('.jpg')])
-    # Sample from 150 frames evenly distributed across the entire flight video
-    idx_list = np.linspace(0, len(files)-1, min(150, len(files)), dtype=int)
-    bgs = []
-    for idx in idx_list:
-        p = os.path.join(frames_dir, files[idx])
-        try:
-            with Image.open(p) as img:
-                w, h = img.size
-                for (x0, y0) in [
-                    (100, 100),
-                    (w-100-sz, 100),
-                    (100, h-100-sz),
-                    (w-100-sz, h-100-sz),
-                    (w//2-sz//2, h//2-sz//2),
-                ]:
-                    x0 = max(0, min(x0, w-sz))
-                    y0 = max(0, min(y0, h-sz))
-                    bgs.append(img.crop((x0, y0, x0+sz, y0+sz)).copy())
-        except Exception:
-            pass
-    print(f"Extracted {len(bgs)} background patches of size {sz}x{sz}")
+            
+    # 2. Load false positive negatives from 'new_negatives' folder if it exists
+    new_neg_dir = r"C:\Users\mido\Documents\antigravity\focused-babbage\new_negatives"
+    if os.path.exists(new_neg_dir):
+        new_neg_files = glob.glob(os.path.join(new_neg_dir, "*.jpg"))
+        if new_neg_files:
+            print(f"Loading {len(new_neg_files)} custom desaturated false-positive negatives...")
+            # We add them multiple times to increase their sampling weight (5x oversampling)
+            for _ in range(5):
+                for p in new_neg_files:
+                    try:
+                        with Image.open(p) as img:
+                            bgs.append(img.copy())
+                    except Exception:
+                        pass
+            print(f"Total backgrounds database size: {len(bgs)}")
+            
     return bgs
 
 # ─── Augmentation helpers ────────────────────────────────────────────────────

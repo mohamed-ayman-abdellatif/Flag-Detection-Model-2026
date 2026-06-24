@@ -92,6 +92,35 @@ def main():
             
         print(f"  Copied {len(s_imgs)} synthetic images to {split} split.")
 
+    # 4b. Copy new full-frame negatives into splits with empty labels
+    print("\n=== Merging new full-frame negatives ===")
+    full_neg_dir = os.path.join(base_dir, "full_frame_negatives")
+    if os.path.exists(full_neg_dir):
+        neg_files = [f for f in os.listdir(full_neg_dir) if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
+        train_count = 0
+        val_count = 0
+        for f in neg_files:
+            # 80/20 split
+            split = "train" if random.random() < 0.80 else "val"
+            
+            # Copy image
+            src_img = os.path.join(full_neg_dir, f)
+            dst_img = os.path.join(dst_dir, "images", split, f)
+            shutil.copy2(src_img, dst_img)
+            
+            # Write empty label file
+            lbl_name = os.path.splitext(f)[0] + ".txt"
+            dst_lbl = os.path.join(dst_dir, "labels", split, lbl_name)
+            with open(dst_lbl, 'w') as lf:
+                pass
+                
+            if split == "train":
+                train_count += 1
+            else:
+                val_count += 1
+                
+        print(f"  Copied {train_count} full-frame negatives to train split, and {val_count} to val split.")
+
     # 5. Generate final data.yaml config
     yaml_content = f"""path: {dst_dir.replace('\\', '/')}
 train: images/train
