@@ -1,0 +1,12 @@
+=== FINAL FLAG LOCATION ===
+Flag Latitude:  29.81855414 N
+Flag Longitude: 30.82990827 E
+Flag Altitude:  224.00 m
+
+=== CALIBRATION PARAMETERS ===
+Flag NED North:  13.3840 m
+Flag NED East:   -24.1985 m
+Ground Altitude: 224.0000 m
+Camera Yaw Offset (phi): 90.00 deg
+Reprojection RMSE: 227.20 px
+Inliers: 10 / 10 (Moving sequence frames 3000-3960)
