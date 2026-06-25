@@ -1,85 +1,105 @@
-# Flag Detection Model (2026)
+# Flag Detection Model (YOLO26s)
 
-This repository contains the training pipelines, models, and scripts for a high-accuracy flag detection model trained to recognize flags (including Germany, Russia, France, Egypt, and others) from aerial/drone footage.
+[![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org/)
+[![Framework](https://img.shields.io/badge/YOLO-v8%20%2F%20v26-orange)](https://github.com/ultralytics/ultralytics)
+[![Deep Learning](https://img.shields.io/badge/PyTorch-EE4C2C?style=flat&logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-## Project Overview
-
-*   **Model Architecture:** YOLO26 Small (Ultralytics)
-*   **Task Type:** 1-Class Object Detection (`flag`)
-*   **Input Image Dimensions:** Native `imgsz=640`
-*   **Model Weights:** Deployed directly in the root as `yolo26s_flag_best.pt`
+This repository contains the training pipelines, deployment weights, validation scripts, and video inference utilities for a high-accuracy flag detection model trained to identify national and institutional flags from aerial drone footage. 
 
 ---
 
-## Performance Metrics (YOLO26s - Latest Model)
+## 🚀 Key Features
 
-After training for **100 epochs** on the remote Kaggle Tesla T4 GPU with the updated dataset (incorporating scale-matched full-frame negatives and flight background frames), the model achieved the following validation metrics:
-
-| Metric | Value |
-|---|---|
-| **Precision** | 99.51% |
-| **Recall** | 99.65% |
-| **mAP@50** | 99.50% |
-| **mAP@50-95** | **81.18%** (Boosted from 81.10%) |
-
-### Key Improvements:
-*   **Concrete Barrier, Wreckage & Curb False Positives Resolved:** Trained on **1,462 full-frame negatives** (including 806 background/flight negatives downloaded from `frames-20260515T124041Z-3-001\frames` and 353 curb-matched negatives) to completely eliminate false detections on runway wreckage, concrete slabs/barriers, and crowds on sand.
-*   **100% Generalization Pass Rate:** Achieved a **100.0% validation success rate** (10/10 detections) across all 319 flag classes in the validation sweep, including Qatar, Egypt, and Germany.
-
-### Training Progress & Curves
-![YOLO26s Training Curves](runs/kaggle_results/runs/detect/yolo26_small/results.png)
+*   **Robust Background Negative Training:** Retrained on **1,462 full-frame negatives** (including 806 background flight frames and 353 concrete curb-matched frames) to completely eliminate false positives on concrete curbs, runway wreckage, barriers, and crowds on sand.
+*   **Aspect Ratio Locked Scaling:** Preserves flag proportions during synthetic dataset generation, ensuring excellent detection rates even for highly non-standard flag dimensions (such as the 11:28 ratio of the Qatar flag).
+*   **Temporal Stability Filter:** Integrates an IoU-based bounding box tracking filter that stabilizes detections across frames and filters out transient, single-frame false positives (flickering).
+*   **100% Generalization Success:** Achieved a perfect **100.0% pass rate** across all **319 flag classes** (10/10 test predictions each) evaluated in the validation sweep.
 
 ---
 
-## 4K Validation Image Test
+## 📊 Model Performance & Training Curves
 
-The model was verified locally on high-resolution 4K validation images (`validate_ai/`) using a test resolution of `imgsz=640` (to match the training scale and avoid resolution mismatch). 
+After training for **100 epochs** on a remote **Nvidia Tesla T4 GPU** (via Kaggle), the model achieved the following validation metrics:
 
-Testing on `15.jpg` (containing Germany, Russia, and France flags) achieved **100.0% accuracy** with **zero false positives**:
+| Metric | Value | Description |
+| :--- | :--- | :--- |
+| **Precision** | **99.51%** | Bounding box prediction accuracy |
+| **Recall** | **99.65%** | Ability to detect all visible flags |
+| **mAP@50** | **99.50%** | Mean Average Precision at IoU threshold 0.50 |
+| **mAP@50-95** | **81.18%** | Average precision across IoU thresholds 0.50 to 0.95 |
 
-*   **France Flag:** Detected with **92% confidence** (deviation: 1.0px).
-*   **Germany Flag:** Detected with **80% confidence** (deviation: 1.4px).
-*   **Russia Flag:** Detected with **76% confidence** (deviation: 2.5px).
+### Training Metrics & Loss curves
+The curves below show the steady convergence of bounding box loss, classification loss, and validation metrics over the 100 epochs:
 
-Annotated predictions are saved in the `validate_ai_results_3840/` directory.
-
-### Annotated 4K Result Sample (15.jpg)
-![Trained YOLO26s detections on 15.jpg](assets/highres_15_detected.jpg)
-
----
-
-## File Structure & Contents
-
-*   `yolo26s_flag_best.pt`: The final, high-accuracy trained model weights (tracked in the repository).
-*   `train_yolo26_kaggle.ipynb`: The notebook executed on Kaggle to perform remote training.
-*   `run_kaggle_training.py`: Python automation orchestrator that zips the dataset, uploads it to Kaggle, triggers training via Kaggle API, and retrieves training weights and evaluation charts automatically.
-*   `verify_fps_resolved.py`: Verification script evaluating the model on known false-positive frames.
-*   `validate_exact_rates.py`: Validation sweep script evaluating detection rates for all 319 flag classes.
-*   `kaggle_dataset_resized/`: The resized training dataset (640px) used for remote Kaggle uploads.
-*   `validate_ai/`: High-resolution 4K validation images.
-*   `validate_ai_results_3840/`: Validation images annotated with bounding boxes and confidence scores.
+![YOLO26s Training Curves](assets/results.png)
 
 ---
 
-## Getting Started
+## 📷 Model Inference Gallery (Validation Predictions)
 
-### Prerequisites
+Here are samples of high-resolution 4K images from the validation set (`validate_ai/`) showing correct flag predictions and zero false positives under the new model:
 
-Install the required python packages:
+### 1. Multi-Flag Detection (France, Germany, Russia)
+The model detects multiple flags on the runway with high confidence, ignoring the surrounding grey concrete cracks and curbing:
+
+![Detections on 15.jpg](assets/highres_15_detected.jpg)
+
+### 2. Multi-Flag Detection (France, Germany, Russia - Alternate Angle)
+The model maintains stable bounding boxes and high confidence labels even as the camera perspective shifts:
+
+![Detections on 18.jpg](assets/highres_18_detected.jpg)
+
+### 3. Germany Flag Close-Up
+High confidence detection on the German flag from a steep camera tilt angle:
+
+![Detections on 22.jpg](assets/highres_22_detected.jpg)
+
+---
+
+## 📂 Repository Structure
+
+```
+├── assets/                     # Tracked images for README (curves & prediction samples)
+├── annotated_runs/             # Target output folder for annotated flight videos
+├── dataset/                    # Dataset configuration and labels
+├── validate_ai/                # High-resolution 4K validation images
+├── yolo26s_flag_best.pt        # Final trained model weights (tracked directly in git)
+├── detect_flag_video.py        # Video inference script with TemporalFilter tracking
+├── validate_exact_rates.py     # Batch validation sweep evaluating all 319 flag classes
+├── verify_fps_resolved.py      # Verification script testing known false positive frames
+├── merge_and_generate_dataset.py # Merges original dataset with negative background frames
+└── run_kaggle_training.py      # Automates dataset zipping, Kaggle upload, and training launch
+```
+
+---
+
+## 🛠️ Getting Started
+
+### Installation
+Clone this repository and install the dependencies:
 ```bash
+git clone https://github.com/mohamed-ayman-abdellatif/Flag-Detection-Model-2026.git
+cd Flag-Detection-Model-2026
 pip install ultralytics opencv-python numpy PyYAML
 ```
 
-### Running Inference
-
-To run the model on validation images:
+### Running Inference on Images
+Run predictions on static images with native `imgsz=640` and a confidence threshold of `0.15`:
 ```python
 from ultralytics import YOLO
 
-# Load the trained model
+# Load the best model weights
 model = YOLO('yolo26s_flag_best.pt')
 
-# Run inference at native 640px scale (matches training resolution)
-results = model.predict(source='validate_ai/15.jpg', imgsz=640, conf=0.10)
-results[0].show()  # Display predictions
+# Run inference
+results = model.predict(source='validate_ai/15.jpg', imgsz=640, conf=0.15)
+results[0].show()
 ```
+
+### Running Inference on Flight Videos (with Temporal Filter)
+To process flight video streams and generate a stabilized, false-positive-free video:
+```bash
+python detect_flag_video.py path/to/your/flight_video.mp4
+```
+*Outputs will be saved directly to the `annotated_runs/` directory.*
