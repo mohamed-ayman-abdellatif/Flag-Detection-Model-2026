@@ -131,6 +131,40 @@ def main():
                 
         print(f"  Copied {train_count} full-frame negatives to train split, and {val_count} to val split.")
 
+    # 4c. Copy target image and write labels (30x oversampled in train split)
+    print("\n=== Merging and oversampling target image ===")
+    target_img_src = r"C:\Users\mido\.gemini\antigravity\brain\5fbcdffe-e6b3-4e67-8084-371c60076362\media__1782355964878.jpg"
+    target_labels = [
+        "0 0.145854 0.176285 0.008857 0.017780",
+        "0 0.172876 0.491302 0.011572 0.010787",
+        "0 0.425854 0.495428 0.014521 0.018374",
+        "0 0.458804 0.040490 0.008916 0.022238",
+        "0 0.620708 0.333776 0.009658 0.015490"
+    ]
+    if os.path.exists(target_img_src):
+        for idx in range(30):
+            target_img_name = f"target_frame_{idx:02d}.jpg"
+            target_lbl_name = f"target_frame_{idx:02d}.txt"
+            
+            # Copy to train images
+            shutil.copy2(target_img_src, os.path.join(dst_dir, "images", "train", target_img_name))
+            
+            # Write to train labels
+            target_lbl_dst = os.path.join(dst_dir, "labels", "train", target_lbl_name)
+            with open(target_lbl_dst, 'w') as lf:
+                for lbl in target_labels:
+                    lf.write(lbl + "\n")
+        print("  Copied 30 oversampled copies of target image to train split.")
+    else:
+        print("  WARNING: Target image not found at target_img_src!")
+
+    # 4d. Copy pre-trained model weights into the dataset folder
+    print("\n=== Copying pre-trained model weights ===")
+    best_weights_src = os.path.join(base_dir, "yolo26s_flag_best.pt")
+    if os.path.exists(best_weights_src):
+        shutil.copy2(best_weights_src, os.path.join(dst_dir, "yolo26s_flag_best.pt"))
+        print("  Copied yolo26s_flag_best.pt into merged dataset folder.")
+
     # 5. Generate final data.yaml config
     yaml_content = f"""path: {dst_dir.replace('\\', '/')}
 train: images/train

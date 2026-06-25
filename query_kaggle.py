@@ -35,12 +35,17 @@ def main():
     
     # Check kernel logs
     res3 = subprocess.run([cli_path, 'kernels', 'logs', f"{username}/train-yolo26-small-flag-detector"],
-                          capture_output=True, text=True, env=env)
+                          capture_output=True, text=True, encoding='utf-8', errors='replace', env=env)
     print("\nKernel Logs:")
     logs_out = res3.stdout.strip()
-    if len(logs_out) > 2000:
-        logs_out = "[LOGS TRUNCATED FOR BREVITY...]\n" + logs_out[-2000:]
-    print(logs_out)
+    if len(logs_out) > 3000:
+        logs_out = "[LOGS TRUNCATED FOR BREVITY...]\n" + logs_out[-3000:]
+    try:
+        import sys
+        enc = sys.stdout.encoding or 'utf-8'
+        print(logs_out.encode(enc, errors='replace').decode(enc))
+    except Exception as e:
+        print("[Error printing logs due to encoding:", str(e), "]")
     if res3.stderr.strip():
         print("STDERR:", res3.stderr.strip())
 
