@@ -6,6 +6,16 @@ import subprocess
 from PIL import Image
 
 def clean_dir(path):
+    import time
+    for _ in range(5):
+        try:
+            if os.path.exists(path):
+                shutil.rmtree(path)
+            os.makedirs(path, exist_ok=True)
+            return
+        except Exception:
+            time.sleep(0.5)
+    # Fallback to direct call which throws on failure
     if os.path.exists(path):
         shutil.rmtree(path)
     os.makedirs(path, exist_ok=True)

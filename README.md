@@ -13,17 +13,17 @@ This repository contains the training pipelines, models, and scripts for a high-
 
 ## Performance Metrics (YOLO26s - Latest Model)
 
-After training for **100 epochs** on the remote Kaggle Tesla T4 GPU with the updated dataset (incorporating scale-matched full-frame negatives), the model achieved the following validation metrics:
+After training for **100 epochs** on the remote Kaggle Tesla T4 GPU with the updated dataset (incorporating scale-matched full-frame negatives and flight background frames), the model achieved the following validation metrics:
 
 | Metric | Value |
 |---|---|
-| **Precision** | 99.64% |
-| **Recall** | 99.59% |
-| **mAP@50** | 99.47% |
-| **mAP@50-95** | **81.10%** (Boosted from 75.83%) |
+| **Precision** | 99.51% |
+| **Recall** | 99.65% |
+| **mAP@50** | 99.50% |
+| **mAP@50-95** | **81.18%** (Boosted from 81.10%) |
 
 ### Key Improvements:
-*   **Curb & Runway False Positives Resolved:** Trained on **353 full-frame negatives** letterboxed directly to $640 \times 640$ to preserve the exact resolution scale of concrete curbs during drone flights. Detections on gray curbs are now completely eliminated.
+*   **Concrete Barrier, Wreckage & Curb False Positives Resolved:** Trained on **1,462 full-frame negatives** (including 806 background/flight negatives downloaded from `frames-20260515T124041Z-3-001\frames` and 353 curb-matched negatives) to completely eliminate false detections on runway wreckage, concrete slabs/barriers, and crowds on sand.
 *   **100% Generalization Pass Rate:** Achieved a **100.0% validation success rate** (10/10 detections) across all 319 flag classes in the validation sweep, including Qatar, Egypt, and Germany.
 
 ### Training Progress & Curves
