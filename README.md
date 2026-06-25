@@ -36,24 +36,24 @@ The curves below show the steady convergence of bounding box loss, classificatio
 
 ---
 
-## 📷 Model Inference Gallery (Validation Predictions)
+## 📷 Model Inference Gallery (Flight Video Detections)
 
-Here are samples of high-resolution 4K images from the validation set (`validate_ai/`) showing correct flag predictions and zero false positives under the new model:
+Here are sample frames extracted from the actual flight video showing correct flag predictions and zero false positives on concrete curbs, runway wreckage, or barriers:
 
-### 1. Multi-Flag Detection (France, Germany, Russia)
-The model detects multiple flags on the runway with high confidence, ignoring the surrounding grey concrete cracks and curbing:
+### 1. Flight Frame 2400 (Qatar Flag Detection - 89% Confidence)
+The model detects the Qatar flag with high confidence from a top-down aerial perspective:
 
-![Detections on 15.jpg](assets/highres_15_detected.jpg)
+![Detections on Frame 2400](assets/highres_15_detected.jpg)
 
-### 2. Multi-Flag Detection (France, Germany, Russia - Alternate Angle)
-The model maintains stable bounding boxes and high confidence labels even as the camera perspective shifts:
+### 2. Flight Frame 2385 (Qatar Flag Detection - 79% Confidence)
+Stable bounding box prediction as the drone approaches and rotates:
 
-![Detections on 18.jpg](assets/highres_18_detected.jpg)
+![Detections on Frame 2385](assets/highres_18_detected.jpg)
 
-### 3. Germany Flag Close-Up
-High confidence detection on the German flag from a steep camera tilt angle:
+### 3. Flight Frame 2415 (Qatar Flag Detection - 64% Confidence)
+High confidence detection maintained under steep perspective tilt:
 
-![Detections on 22.jpg](assets/highres_22_detected.jpg)
+![Detections on Frame 2415](assets/highres_22_detected.jpg)
 
 ---
 
